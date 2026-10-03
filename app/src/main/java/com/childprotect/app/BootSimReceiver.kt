@@ -47,7 +47,7 @@ class BootSimReceiver : BroadcastReceiver() {
         Log.w(TAG, "SIM fingerprint changed")
         prefs.simIccid = current
         prefs.lastSimAlertAt = now
-        val to = prefs.allowedSender.trim()
+        val to = prefs.ownerNumber
         if (to.isNotEmpty()) {
             LocateService.start(
                 context,

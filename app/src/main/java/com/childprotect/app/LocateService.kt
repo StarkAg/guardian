@@ -36,14 +36,9 @@ class LocateService : Service() {
         }.getOrDefault(Command.LOCATE)
         val prefix = intent?.getStringExtra(EXTRA_PREFIX).orEmpty()
 
-        // Enforce the allow-list (match on the last 7 digits to ignore formatting).
-        val allowed = prefs.allowedSender.trim()
-        if (allowed.isNotEmpty() && sender.isNotEmpty() &&
-            !sender.contains(allowed.takeLast(7))
-        ) {
-            Log.w(TAG, "Sender $sender not in allow-list; ignoring")
-            stopSelf(); return START_NOT_STICKY
-        }
+        // Sender authorization (trusted-contacts + PIN) is enforced upstream in
+        // SmsReceiver, which has the message body. Internal triggers (SIM-swap,
+        // low battery) are trusted by construction and target the owner number.
 
         scope.launch {
             try {

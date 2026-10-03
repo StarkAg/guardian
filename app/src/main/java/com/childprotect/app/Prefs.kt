@@ -6,14 +6,53 @@ import android.content.Context
 class Prefs(context: Context) {
     private val sp = context.getSharedPreferences("child_protect", Context.MODE_PRIVATE)
 
+    init {
+        // One-time migration: the old single "allowed_sender" becomes the first
+        // entry of the new trusted-contacts list.
+        if (!sp.contains("trusted_contacts") && sp.contains("allowed_sender")) {
+            val old = sp.getString("allowed_sender", "").orEmpty()
+            sp.edit().putString("trusted_contacts", old).remove("allowed_sender").apply()
+        }
+    }
+
     var secretCode: String
         get() = sp.getString("secret_code", "") ?: ""
         set(v) = sp.edit().putString("secret_code", v).apply()
 
-    /** Only reply to this number if set; blank = reply to whoever sent the trigger. */
-    var allowedSender: String
-        get() = sp.getString("allowed_sender", "") ?: ""
-        set(v) = sp.edit().putString("allowed_sender", v).apply()
+    // ---- Who may send commands (dual model: trusted contacts + PIN) --------
+
+    /**
+     * Phone numbers allowed to send commands, separated by commas or newlines.
+     * A sender on this list never needs the PIN. Blank + PIN off = the secret
+     * code alone authorizes (reply to whoever sent the trigger).
+     */
+    var trustedContacts: String
+        get() = sp.getString("trusted_contacts", "") ?: ""
+        set(v) = sp.edit().putString("trusted_contacts", v).apply()
+
+    /** Parsed, trimmed, non-blank trusted numbers. */
+    fun trustedList(): List<String> =
+        trustedContacts.split(',', '\n', ';')
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+
+    /** Destination for auto-alerts (SIM-swap, low battery): the first trusted number. */
+    val ownerNumber: String
+        get() = trustedList().firstOrNull().orEmpty()
+
+    /**
+     * Anonymous access: when on, a sender NOT in [trustedContacts] can still run
+     * commands if the message also carries [pin] as a standalone token. Lets you
+     * recover a phone from any borrowed handset without pre-listing its number.
+     */
+    var pinEnabled: Boolean
+        get() = sp.getBoolean("pin_enabled", false)
+        set(v) = sp.edit().putBoolean("pin_enabled", v).apply()
+
+    /** PIN for anonymous (non-trusted) access — a second secret, distinct from the code. */
+    var pin: String
+        get() = sp.getString("pin", "") ?: ""
+        set(v) = sp.edit().putString("pin", v).apply()
 
     // ---- Privilege backends -------------------------------------------------
 

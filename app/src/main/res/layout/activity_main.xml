@@ -101,15 +101,38 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Only reply to / alert this number (optional)"
+            android:text="Trusted numbers — allowed to send commands (one per line). The first is where SIM-swap &amp; low-battery alerts go."
             android:paddingTop="16dp" />
 
         <EditText
-            android:id="@+id/editSender"
+            android:id="@+id/editTrusted"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="e.g. +15551234567"
-            android:inputType="phone" />
+            android:hint="+15551234567&#10;+15557654321"
+            android:gravity="top"
+            android:minLines="2"
+            android:inputType="textMultiLine|phone" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switchPin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:text="Allow anyone with the PIN (anonymous access)" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PIN — lets you command the phone from any borrowed handset by including it in the message"
+            android:textSize="12sp"
+            android:paddingTop="4dp" />
+
+        <EditText
+            android:id="@+id/editPin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="e.g. 4821"
+            android:inputType="text" />
 
         <!-- Toggles -->
         <View

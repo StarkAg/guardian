@@ -40,6 +40,9 @@ object CommandRouter {
         }
     }
 
+    /** True if [token] appears in [body] as a whole, delimited token (case-insensitive). */
+    fun hasToken(body: String, token: String): Boolean = containsToken(body, token)
+
     /** True if [code] appears in [body] as a whole, delimited token (case-insensitive). */
     private fun containsToken(body: String, code: String): Boolean {
         val pattern = Regex(

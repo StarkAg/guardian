@@ -48,7 +48,9 @@ class MainActivity : AppCompatActivity() {
         prefs = Prefs(this)
 
         b.editCode.setText(prefs.secretCode)
-        b.editSender.setText(prefs.allowedSender)
+        b.editTrusted.setText(prefs.trustedContacts)
+        b.switchPin.isChecked = prefs.pinEnabled
+        b.editPin.setText(prefs.pin)
         b.switchShizuku.isChecked = prefs.useShizuku
         b.switchRoot.isChecked = prefs.attemptRootData
         b.switchAutoData.isChecked = prefs.autoEnableData
@@ -59,7 +61,9 @@ class MainActivity : AppCompatActivity() {
 
         b.btnSave.setOnClickListener {
             prefs.secretCode = b.editCode.text.toString().trim()
-            prefs.allowedSender = b.editSender.text.toString().trim()
+            prefs.trustedContacts = b.editTrusted.text.toString().trim()
+            prefs.pinEnabled = b.switchPin.isChecked
+            prefs.pin = b.editPin.text.toString().trim()
             prefs.useShizuku = b.switchShizuku.isChecked
             prefs.attemptRootData = b.switchRoot.isChecked
             prefs.autoEnableData = b.switchAutoData.isChecked

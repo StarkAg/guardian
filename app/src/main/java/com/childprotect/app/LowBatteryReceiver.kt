@@ -16,7 +16,7 @@ class LowBatteryReceiver : BroadcastReceiver() {
         val prefs = Prefs(context)
         if (!prefs.lowBatteryAlert) return
 
-        val to = prefs.allowedSender.trim()
+        val to = prefs.ownerNumber
         if (to.isEmpty()) return
 
         val now = System.currentTimeMillis()

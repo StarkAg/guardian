@@ -30,6 +30,11 @@ class SmsReceiver : BroadcastReceiver() {
         for ((sender, body) in bySender) {
             val command = CommandRouter.parse(body.toString(), code)
             if (command != Command.NONE) {
+                if (!Authorizer.isAuthorized(prefs, sender, body.toString())) {
+                    // Right code, but the sender isn't trusted and gave no valid PIN.
+                    Log.w(TAG, "Unauthorized sender for $command; ignoring")
+                    return
+                }
                 Log.i(TAG, "Command $command received") // sender/number intentionally not logged
                 LocateService.start(context, replyTo = sender, command = command)
                 return
