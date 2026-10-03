@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Device-admin policy for the anti-theft app. Being an *active* device admin is
+  what blocks a thief from uninstalling the app: Android refuses to uninstall an
+  active admin until it is deactivated, and deactivation needs the lock screen /
+  the owner going into Settings. We also request force-lock so the owner can
+  remotely lock the phone by SMS.
+-->
+<device-admin xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-policies>
+        <force-lock />
+    </uses-policies>
+</device-admin>

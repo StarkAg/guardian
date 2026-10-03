@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:paddingBottom="12dp" />
+
+        <TextView
+            android:id="@+id/txtStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="12dp" />
+
+        <Button
+            android:id="@+id/btnPerms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Grant permissions" />
+
+        <!-- Shizuku -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="16dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/txtShizuku"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Shizuku: checking…"
+            android:paddingBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnShizuku"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="Request access" />
+
+            <Button
+                android:id="@+id/btnGuide"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="How to start" />
+        </LinearLayout>
+
+        <!-- Device admin / uninstall protection -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="16dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/txtAdmin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Uninstall protection: checking…"
+            android:paddingBottom="8dp" />
+
+        <Button
+            android:id="@+id/btnAdmin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enable uninstall protection" />
+
+        <!-- Config -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Secret code (the trigger SMS must contain it)"
+            android:paddingTop="20dp" />
+
+        <EditText
+            android:id="@+id/editCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="e.g. WHERE-ARE-YOU-7721"
+            android:inputType="text" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Only reply to / alert this number (optional)"
+            android:paddingTop="16dp" />
+
+        <EditText
+            android:id="@+id/editSender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="e.g. +15551234567"
+            android:inputType="phone" />
+
+        <!-- Toggles -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="16dp"
+            android:background="?android:attr/listDivider" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switchShizuku"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Use Shizuku for privileged actions" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switchRoot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:text="Allow root (su) fallback" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switchAutoData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:text="Turn ON mobile data when triggered" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switchAutoLoc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:text="Turn ON location when triggered" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switchRing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:text="Allow RING / find-phone alarm" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switchSim"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:text="SIM-change anti-theft alert" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switchBattery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:text="Low-battery auto-locate" />
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Save settings" />
+
+    </LinearLayout>
+</ScrollView>
