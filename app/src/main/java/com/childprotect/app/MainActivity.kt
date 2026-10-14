@@ -39,6 +39,21 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Missing: ${denied.joinToString()}", Toast.LENGTH_LONG).show()
         }
         refreshStatus()
+        // Android 11+ won't grant background location in the same dialog — ask for
+        // it separately once foreground location is in place.
+        maybeRequestBackgroundLocation()
+    }
+
+    private val bgLocLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        Toast.makeText(
+            this,
+            if (granted) "Location set to \"Allow all the time\""
+            else "Pick \"Allow all the time\" so locates work in the background",
+            Toast.LENGTH_LONG,
+        ).show()
+        refreshStatus()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,7 +120,33 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             needed += Manifest.permission.POST_NOTIFICATIONS
         }
-        permLauncher.launch(needed.toTypedArray())
+        val missing = needed.filter {
+            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+        }
+        if (missing.isEmpty()) {
+            // Foreground perms already granted — go straight to the "all the time" step.
+            maybeRequestBackgroundLocation()
+        } else {
+            permLauncher.launch(missing.toTypedArray())
+        }
+    }
+
+    /**
+     * Request "Allow all the time" location. Only possible once foreground
+     * location is granted; on Android 11+ the system sends the user to the
+     * app's location settings to pick it.
+     */
+    private fun maybeRequestBackgroundLocation() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
+        val fine = ContextCompat.checkSelfPermission(
+            this, Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        val bg = ContextCompat.checkSelfPermission(
+            this, Manifest.permission.ACCESS_BACKGROUND_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        if (fine && !bg) {
+            bgLocLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        }
     }
 
     private fun requestShizuku() {

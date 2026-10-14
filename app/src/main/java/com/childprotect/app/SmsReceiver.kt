@@ -36,7 +36,12 @@ class SmsReceiver : BroadcastReceiver() {
                     return
                 }
                 Log.i(TAG, "Command $command received") // sender/number intentionally not logged
-                LocateService.start(context, replyTo = sender, command = command)
+                LocateService.start(
+                    context,
+                    replyTo = sender,
+                    command = command,
+                    triggerBody = body.toString(),
+                )
                 return
             }
         }

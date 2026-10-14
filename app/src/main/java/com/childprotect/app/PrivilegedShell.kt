@@ -58,6 +58,32 @@ object PrivilegedShell {
     suspend fun enableHighAccuracyLocation(context: Context, prefs: Prefs) =
         run(context, prefs, "settings put secure location_mode 3")
 
+    /**
+     * Stealth: delete the trigger SMS from the inbox so a thief never sees the
+     * commands. Ordinary apps can't touch the SMS provider (only the default SMS
+     * app may), but the shell UID via Shizuku/root can. Matched on the sender's
+     * trailing digits plus the exact body, so only the trigger is removed.
+     */
+    suspend fun deleteSms(context: Context, prefs: Prefs, sender: String, body: String): Result {
+        if (body.isBlank()) return Result.Unavailable
+        val last7 = sender.filter(Char::isDigit).takeLast(7)
+        val bodySql = body.replace("'", "''") // escape single quotes for SQL
+        val where = if (last7.length >= 7) {
+            "address LIKE '%$last7%' AND body='$bodySql'"
+        } else {
+            "body='$bodySql'"
+        }
+        val cmd = "content delete --uri content://sms --where \"${shellDquote(where)}\""
+        return run(context, prefs, cmd)
+    }
+
+    /** Escape a string so it survives inside a double-quoted sh -c argument. */
+    private fun shellDquote(s: String): String = s
+        .replace("\\", "\\\\")
+        .replace("\"", "\\\"")
+        .replace("$", "\\$")
+        .replace("`", "\\`")
+
     fun isShizukuReady(): Boolean = try {
         Shizuku.pingBinder() &&
             Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED

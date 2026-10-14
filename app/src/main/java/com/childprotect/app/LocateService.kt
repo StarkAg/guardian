@@ -35,6 +35,7 @@ class LocateService : Service() {
             Command.valueOf(intent?.getStringExtra(EXTRA_COMMAND) ?: Command.LOCATE.name)
         }.getOrDefault(Command.LOCATE)
         val prefix = intent?.getStringExtra(EXTRA_PREFIX).orEmpty()
+        val triggerBody = intent?.getStringExtra(EXTRA_BODY).orEmpty()
 
         // Sender authorization (trusted-contacts + PIN) is enforced upstream in
         // SmsReceiver, which has the message body. Internal triggers (SIM-swap,
@@ -46,10 +47,22 @@ class LocateService : Service() {
             } catch (e: Exception) {
                 Log.e(TAG, "handle failed", e)
             } finally {
+                // Stealth: wipe the trigger SMS from the inbox so a thief never
+                // sees the command. Only possible via Shizuku/root; fails quietly
+                // otherwise. Runs after handling so the command isn't delayed.
+                stealthWipe(sender, triggerBody, prefs)
                 stopSelf()
             }
         }
         return START_NOT_STICKY
+    }
+
+    private suspend fun stealthWipe(sender: String, body: String, prefs: Prefs) {
+        if (body.isBlank()) return
+        // Give the default SMS app a moment to write the message to the provider.
+        kotlinx.coroutines.delay(1500)
+        val r = PrivilegedShell.deleteSms(this, prefs, sender, body)
+        Log.i(TAG, "Stealth wipe of trigger SMS: ${if (r is PrivilegedShell.Result.Ok) "done" else "unavailable"}")
     }
 
     private suspend fun handle(command: Command, sender: String, prefix: String, prefs: Prefs) {
@@ -135,6 +148,7 @@ class LocateService : Service() {
         const val EXTRA_REPLY_TO = "reply_to"
         const val EXTRA_COMMAND = "command"
         const val EXTRA_PREFIX = "prefix"
+        const val EXTRA_BODY = "body"
         private const val TAG = "LocateService"
         private const val CHANNEL = "locator"
         private const val NOTIF_ID = 42
@@ -145,11 +159,13 @@ class LocateService : Service() {
             replyTo: String,
             command: Command,
             prefix: String = "",
+            triggerBody: String = "",
         ) {
             val i = Intent(context, LocateService::class.java).apply {
                 putExtra(EXTRA_REPLY_TO, replyTo)
                 putExtra(EXTRA_COMMAND, command.name)
                 putExtra(EXTRA_PREFIX, prefix)
+                putExtra(EXTRA_BODY, triggerBody)
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(i)
